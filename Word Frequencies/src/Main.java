@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new BufferedReader(new FileReader("test.txt")));
+        Scanner scanner = new Scanner(new BufferedReader(new FileReader("Word Frequencies/test.txt")));
         scanner.useDelimiter("\\W+");
 
         HashMap<String, Integer> frequencies = new HashMap<>();
