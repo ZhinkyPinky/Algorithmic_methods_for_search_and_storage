@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -35,9 +36,23 @@ public class Main {
             System.out.println();
 
             for (int i : intArray) {
-                // System.out.print(i + "\t");
+                //System.out.print(i + "\t");
             }
 
+            int buffer = 0;
+            int bitsInBuffer = 0;
+            for (int i = 0; i < intArray.length; i++){
+                if (bitsInBuffer < B*8){
+                    bitsInBuffer += bo;
+                    buffer = (buffer << bo) | intArray[i];
+                } else {
+                    bitsInBuffer -= B*8;
+                    System.out.println((buffer >>> bitsInBuffer) & (-1 >>> 32-B*8));
+                    bufferedOutputStream.write((buffer >>> bitsInBuffer) & (-1 >>> 32-B*8));
+                }
+            }
+
+            /*
             int i = 0;
             while (i + (i / bo) < intArray.length) {
                 int bitBuffer = 0;
@@ -71,6 +86,7 @@ public class Main {
                 System.out.println(bitBuffer);
                 bufferedOutputStream.write(bitBuffer);
             }
+             */
 
         /*
         while (scanner.hasNext()) {
