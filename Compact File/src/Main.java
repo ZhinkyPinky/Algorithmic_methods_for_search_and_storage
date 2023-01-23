@@ -16,7 +16,7 @@ public class Main {
             for (int i = 0; i < (file.length() / B); i++) {
                 int integer = 0;
                 for (int j = 0; j < B; j++) {
-                    integer = (integer << (8 * (B - 1 - j))) | (bufferedInputStream.read() & 0xFF) << (8 * (B - 1 - j));
+                    integer = (integer << (8 * j) | (bufferedInputStream.read() & 0xFF));
                 }
 
                 bitsInBuffer += bo;
