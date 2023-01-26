@@ -1,11 +1,13 @@
-import com.sun.jdi.InconsistentDebugInfoException;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        sortTest();
+        //sortTest(new File("Radix Sort/bible-lines.txt"));
+        sortTest(new File("Radix Sort/test.txt"));
     }
 
     private static void sortTest(File file) {
@@ -16,24 +18,47 @@ public class Main {
             while ((line = bufferedReader.readLine()) != null) {
                 aTemp.add(line);
             }
+            //System.out.println(aTemp);
 
-            MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], 2, 0, 0, 0, new DigitGetter<String>() {
+            MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], (-1 >>> (32 - 6)), 0, aTemp.size() - 1, 0, (element, d, bits) -> {
+                byte[] bytes = element.getBytes();
+                System.out.println(Arrays.toString(bytes) + " lkuh");
 
-                @Override
-                public int getDigit(String element, int i, int bits) {
-                    byte[] bytes = element.getBytes();
-                    if (i > element.length()){
-                        return -1;
-                    }
-
-                    int integer = 0;
-                    for (int j = i; j < bits; j++) {
-                        integer = (integer << (8 * j) | (bytes[bytes.length - 1 - j] & 0xFF));
-                    }
-
-                    return integer;
+                int bitsTo = (((bytes.length) * 8)) - (d * bits);
+                System.out.println((((bytes.length))));
+                System.out.println((((bytes.length) * 8)));
+                System.out.println(bitsTo);
+                System.out.println();
+                if (bitsTo < 0) {
+                    return -1;
                 }
+
+                int bitsFrom = ((bytes.length) * 8) - ((d + 1) * bits);
+                System.out.println((((bytes.length))));
+                System.out.println((((bytes.length) * 8)));
+                System.out.println(bitsFrom);
+                System.out.println();
+                if (bitsFrom < 0) {
+                    bitsFrom = 0;
+                }
+
+                int outputBits;
+                if ((bitsTo / 8) == (bitsFrom / 8)) {
+                    outputBits = ((-1 >>> 32 - bitsTo) & bytes[(bitsTo / 8)]) >>> (bitsFrom % 8);
+                    return outputBits;
+                }
+
+                outputBits = bytes[(bitsTo / 8) - 1] >>> (8 - (bitsTo % 8));
+
+                for (int i = 0; i < (bitsTo - bitsFrom) / 8; i++) {
+                    System.out.println("i: " + i + " length: " + bytes.length);
+                    outputBits = (outputBits << 8) & bytes[(bitsTo / 8) - i];
+                }
+                //System.out.println(outputBits);
+                outputBits = (outputBits << (8 - bitsFrom)) & (bytes[(bitsFrom / 8)] >>> (bitsFrom % 8));
+                return outputBits;
             });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
