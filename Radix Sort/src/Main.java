@@ -8,6 +8,7 @@ public class Main {
     public static void main(String[] args) {
         //sortTest(new File("Radix Sort/bible-lines.txt"));
         sortTest(new File("Radix Sort/test.txt"));
+        //sortTest(new File("Radix Sort/ints.txt"));
     }
 
     private static void sortTest(File file) {
@@ -22,22 +23,22 @@ public class Main {
 
             MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], (-1 >>> (32 - 6)), 0, aTemp.size() - 1, 0, (element, d, bits) -> {
                 byte[] bytes = element.getBytes();
-                System.out.println(Arrays.toString(bytes) + " lkuh");
+                //System.out.println(Arrays.toString(bytes) + " lkuh");
 
-                int bitsTo = (((bytes.length) * 8)) - (d * bits);
-                System.out.println((((bytes.length))));
-                System.out.println((((bytes.length) * 8)));
-                System.out.println(bitsTo);
-                System.out.println();
+                int bitsTo = (((bytes.length) * 8) -1 ) - (d * bits);
+                //System.out.println((((bytes.length))));
+                //System.out.println((((bytes.length) * 8)));
+                //System.out.println(bitsTo);
+                //System.out.println();
                 if (bitsTo < 0) {
                     return -1;
                 }
 
-                int bitsFrom = ((bytes.length) * 8) - ((d + 1) * bits);
-                System.out.println((((bytes.length))));
-                System.out.println((((bytes.length) * 8)));
-                System.out.println(bitsFrom);
-                System.out.println();
+                int bitsFrom = ((bytes.length) * 8) -1  - ((d + 1) * bits);
+                //System.out.println((((bytes.length))));
+                //System.out.println((((bytes.length) * 8)));
+                //System.out.println(bitsFrom);
+                //System.out.println();
                 if (bitsFrom < 0) {
                     bitsFrom = 0;
                 }
@@ -51,7 +52,7 @@ public class Main {
                 outputBits = bytes[(bitsTo / 8) - 1] >>> (8 - (bitsTo % 8));
 
                 for (int i = 0; i < (bitsTo - bitsFrom) / 8; i++) {
-                    System.out.println("i: " + i + " length: " + bytes.length);
+                    //System.out.println("i: " + i + " length: " + bytes.length);
                     outputBits = (outputBits << 8) & bytes[(bitsTo / 8) - i];
                 }
                 //System.out.println(outputBits);
