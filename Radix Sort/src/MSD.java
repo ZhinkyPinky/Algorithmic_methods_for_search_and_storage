@@ -3,13 +3,13 @@ import java.util.Arrays;
 public class MSD {
     private static int bla = 0;
 
-    public static <T> void sort(T[] a, T[] aux, int R, int low, int high, int d, DigitGetter<T> digitGetter) {
-        if (high <= low) return;
+    public static <T> T[] sort(T[] a, T[] aux, int R, int low, int high, int d, DigitGetter<T> digitGetter) {
+        if (high <= low) return a;
 
         int[] count = new int[R + 2];
 
         for (int i = low; i <= high; i++) {
-            count[digitGetter.getDigit(a[i], d, 8) + 2]++;
+            count[digitGetter.getDigit(a[i], d, 6) + 2]++;
         }
 
         for (int r = 0; r < R + 1; r++) {
@@ -17,7 +17,7 @@ public class MSD {
         }
 
         for (int i = low; i <= high; i++) {
-            aux[count[digitGetter.getDigit(a[i], d, 8) + 1]++] = a[i];
+            aux[count[digitGetter.getDigit(a[i], d, 6) + 1]++] = a[i];
         }
 
         for (int i = low; i <= high; i++) {
@@ -32,6 +32,7 @@ public class MSD {
             sort(a, aux, R, low + count[r], low + count[r + 1] - 1, d + 1, digitGetter);
         }
 
-        System.out.println(Arrays.toString(a));
+        //System.out.println(Arrays.toString(a));
+        return a;
     }
 }
