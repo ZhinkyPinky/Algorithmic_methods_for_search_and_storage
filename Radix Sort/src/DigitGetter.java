@@ -1,3 +1,3 @@
 public interface DigitGetter<T> {
-    int getDigit(T element, int i, int bits);
+    int getDigit(T element, int d, int bits);
 }

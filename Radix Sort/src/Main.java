@@ -3,13 +3,46 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        sortTest(new File("Radix Sort/bible-lines.txt"));
-        //sortTest(new File("Radix Sort/test.txt"));
-        //sortTest(new File("Radix Sort/testString.txt"));
-        //sortTest(new File("Radix Sort/ints.txt"));
+        sortTestString(new File("Radix Sort/bible-lines.txt"));
+        //sortTestString(new File("Radix Sort/test.txt"));
+        //sortTestString(new File("Radix Sort/testString.txt"));
+        //sortTestInt(new File("Radix Sort/ints.txt"));
+        //sortTestInt(new File("Radix Sort/test.txt"));
     }
 
-    private static void sortTest(File file) {
+    private static void sortTestInt(File file) {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Radix Sort/testOutput.txt"))) {
+            ArrayList<Integer> aTemp = new ArrayList<>();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                aTemp.add(Integer.valueOf(line));
+            }
+
+            Integer[] a = MSD.sort(aTemp.toArray(new Integer[0]), new Integer[aTemp.size()], (-1 >>> (31 - 8)), 0, aTemp.size() - 1, 0, 8, (element, d, bits) -> {
+                int bitsTo = 32 - (d * bits);
+                if (bitsTo < 0) {
+                    return -1;
+                }
+
+                int bitsFrom = (32 - ((d + 1) * bits));
+                if (bitsFrom < 0) {
+                    bitsTo = 0;
+                }
+
+                return ((-1 >>> 32 - (bitsTo)) & element) >>> (bitsFrom);
+            });
+
+            for (Integer s : a) {
+                bufferedWriter.write(s + "\n");
+            }
+            bufferedWriter.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void sortTestString(File file) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
              BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Radix Sort/testOutput.txt"))) {
             ArrayList<String> aTemp = new ArrayList<>();
@@ -17,54 +50,34 @@ public class Main {
             while ((line = bufferedReader.readLine()) != null) {
                 aTemp.add(line);
             }
-            //System.out.println(aTemp);
 
-            String[] a = MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], (-1 >>> (32 - 8)), 0, aTemp.size() - 1, 0, (element, d, bits) -> {
+            String[] a = MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], (-1 >>> (31 - 8)), 0, aTemp.size() - 1, 0, 8, (element, d, bits) -> {
                 byte[] bytes = element.getBytes();
 
-                //System.out.println(Arrays.toString(bytes) + " lkuh");
-                //System.out.println("element: " + element);
-                //System.out.println("digit: " + d);
-                //System.out.println("bytes: " + bytes.length);
-
-                int bitsTo = (bytes.length * 8) - (d * bits) - 1;
-                if (bitsTo < 0) {
+                int bitsFrom = d * bits;
+                if (bitsFrom >= bytes.length * 8) {
                     return -1;
                 }
-                //System.out.println("bitsTo: " + bitsTo);
-                //System.out.println("bitsTo/8: " + (bitsTo / 8));
 
-                int bitsFrom = (bytes.length * 8) - ((d + 1) * bits);
-                if (bitsFrom < 0) {
-                    bitsFrom = 0;
+                int bitsTo = ((d + 1) * bits) - 1;
+                if (bitsTo > bytes.length * 8) {
+                    bitsTo = (bytes.length * 8) - 1;
                 }
-                //System.out.println("bitsFrom: " + bitsFrom);
-                //System.out.println("bitsFrom/8: " + (bitsFrom / 8));
 
                 int outputBits;
-                if ((bitsTo / 8) == (bitsFrom / 8)) {
-                    outputBits = ((-1 >>> 32 - bitsTo) & bytes[(bytes.length - 1) - (bitsTo / 8)]) >>> (bitsFrom % 8);
-                    //System.out.println();
+                if ((bitsFrom / 8) == (bitsTo / 8)) {
+                    outputBits = ((-1 >>> 32 - (bitsTo % 8)) & bytes[bitsTo / 8]) >>> (bitsFrom % 8);
                     return outputBits;
                 }
 
-                outputBits = bytes[bytes.length - (bitsTo / 8)] >>> (8 - (bitsTo % 8));
-                //System.out.println("bytes.length - (bitsTo / 8): " + (bytes.length - (bitsTo / 8)));
-                //System.out.println("bytes[bytes.length - (bitsTo / 8)]: " + bytes[(bytes.length - 1) - (bitsTo / 8)]);
+                outputBits = bytes[bitsFrom / 8] >>> (8 - (bitsFrom % 8));
 
-                for (int i = 1; i < (bitsTo - bitsFrom) / 8; i++) {
-                    //System.out.println(outputBits);
-                    //System.out.println("i: " + i + " length: " + bytes.length);
-                    outputBits = (outputBits << 8) & bytes[(bytes.length - 1) - ((bitsTo / 8) - i)];
-                    //System.out.println(outputBits);
+                for (int i = 0; i < (bitsTo - bitsFrom) / 8; i++) {
+                    outputBits = (outputBits << 8) & bytes[(bitsFrom / 8) + i];
                 }
 
-                //System.out.println("bytes.length - (bitsFrom / 8): " + (bytes.length - (bitsFrom / 8)));
-                //System.out.println("bytes[bytes.length - (bitsFrom / 8)]: " + bytes[bytes.length - (bitsFrom / 8)]);
-                //System.out.println("a: " + outputBits);
-                outputBits = (outputBits << (8 - (bitsFrom % 8))) | (bytes[(bytes.length - 1) - (bitsFrom / 8)] >>> (bitsFrom % 8));
-                //System.out.println("b: " + outputBits);
-                //System.out.println();
+                outputBits = (outputBits << (8 - (bitsTo % 8))) | (bytes[bitsTo / 8] >>> (bitsTo % 8));
+
                 return outputBits;
             });
 
@@ -72,7 +85,6 @@ public class Main {
                 bufferedWriter.write(s + "\n");
             }
             bufferedWriter.flush();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
