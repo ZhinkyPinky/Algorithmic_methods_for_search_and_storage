@@ -1,12 +1,13 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
-        sortTestString(new File("Radix Sort/bible-lines.txt"));
+        //sortTestString(new File("Radix Sort/bible-lines.txt"));
         //sortTestString(new File("Radix Sort/test.txt"));
         //sortTestString(new File("Radix Sort/testString.txt"));
-        //sortTestInt(new File("Radix Sort/ints.txt"));
+        sortTestInt(new File("Radix Sort/ints.txt"));
         //sortTestInt(new File("Radix Sort/test.txt"));
     }
 
@@ -64,19 +65,20 @@ public class Main {
                     bitsTo = (bytes.length * 8) - 1;
                 }
 
-                int outputBits;
-                if ((bitsFrom / 8) == (bitsTo / 8)) {
-                    outputBits = ((-1 >>> 32 - (bitsTo % 8)) & bytes[bitsTo / 8]) >>> (bitsFrom % 8);
-                    return outputBits;
+                int outputBits = 0;
+                for(int i = bitsFrom / 8; i <= bitsTo / 8; i++){
+                    if (i == bitsFrom / 8){
+                        if (i == bitsTo / 8){
+                            return ((-1 >>> 32 - (bitsTo % 8)) & bytes[bitsTo / 8]) >>> (bitsFrom % 8);
+                        }
+
+                        outputBits = bytes[bitsFrom / 8] >>> ((bitsFrom % 8));
+                    } else if (i == bitsTo / 8){
+                        outputBits = (outputBits << (8 - (bitsTo % 8))) | (bytes[bitsTo / 8] >>> (bitsTo % 8));
+                    } else {
+                        outputBits = (outputBits << 8) | bytes[i];
+                    }
                 }
-
-                outputBits = bytes[bitsFrom / 8] >>> (8 - (bitsFrom % 8));
-
-                for (int i = 0; i < (bitsTo - bitsFrom) / 8; i++) {
-                    outputBits = (outputBits << 8) & bytes[(bitsFrom / 8) + i];
-                }
-
-                outputBits = (outputBits << (8 - (bitsTo % 8))) | (bytes[bitsTo / 8] >>> (bitsTo % 8));
 
                 return outputBits;
             });
