@@ -6,8 +6,8 @@ public class Main {
         long timeBefore = System.currentTimeMillis();
         //sortTestString(new File("Radix Sort/bible-lines.txt"));
         //sortTestString(new File("Radix Sort/test.txt"));
-        //sortTestString(new File("Radix Sort/testString.txt"));
-        sortTestInt(new File("Radix Sort/ints.txt"));
+        sortTestString(new File("Radix Sort/testString.txt"));
+        //sortTestInt(new File("Radix Sort/ints.txt"));
         //sortTestInt(new File("Radix Sort/test.txt"));
         long timeAfter = System.currentTimeMillis();
         System.out.println((timeAfter - timeBefore) / 1000.0);
@@ -75,7 +75,6 @@ public class Main {
                         outputBits = bytes[bitsFrom / 8] >>> ((bitsFrom % 8));
                     } else if (i == bitsTo / 8) {
                         outputBits = (outputBits << ((bitsTo % 8))) | (bytes[bitsTo / 8] >>> (7 - (bitsTo % 8)));
-
                     } else {
                         outputBits = (outputBits << 8) | bytes[i];
                     }

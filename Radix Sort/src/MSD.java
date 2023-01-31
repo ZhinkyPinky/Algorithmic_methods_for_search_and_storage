@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class MSD {
     public static <T> T[] sort(T[] a, T[] aux, int R, int low, int high, int d, int bits, DigitGetter<T> digitGetter) {
         if (high <= low) return a;
