@@ -1,14 +1,16 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Main {
     public static void main(String[] args) {
+        long timeBefore = System.currentTimeMillis();
         //sortTestString(new File("Radix Sort/bible-lines.txt"));
         //sortTestString(new File("Radix Sort/test.txt"));
         //sortTestString(new File("Radix Sort/testString.txt"));
         sortTestInt(new File("Radix Sort/ints.txt"));
         //sortTestInt(new File("Radix Sort/test.txt"));
+        long timeAfter = System.currentTimeMillis();
+        System.out.println((timeAfter - timeBefore) / 1000.0);
     }
 
     private static void sortTestInt(File file) {
@@ -52,9 +54,8 @@ public class Main {
                 aTemp.add(line);
             }
 
-            String[] a = MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], (-1 >>> (31 - 8)), 0, aTemp.size() - 1, 0, 8, (element, d, bits) -> {
+            String[] a = MSD.sort(aTemp.toArray(new String[0]), new String[aTemp.size()], (-1 >>> (32 - 8)), 0, aTemp.size() - 1, 0, 8, (element, d, bits) -> {
                 byte[] bytes = element.getBytes();
-
                 int bitsFrom = d * bits;
                 if (bitsFrom >= bytes.length * 8) {
                     return -1;
@@ -66,15 +67,15 @@ public class Main {
                 }
 
                 int outputBits = 0;
-                for(int i = bitsFrom / 8; i <= bitsTo / 8; i++){
-                    if (i == bitsFrom / 8){
-                        if (i == bitsTo / 8){
+                for (int i = bitsFrom / 8; i <= bitsTo / 8; i++) {
+                    if (i == bitsFrom / 8) {
+                        if (i == bitsTo / 8) {
                             return ((-1 >>> 32 - (bitsTo % 8)) & bytes[bitsTo / 8]) >>> (bitsFrom % 8);
                         }
-
                         outputBits = bytes[bitsFrom / 8] >>> ((bitsFrom % 8));
-                    } else if (i == bitsTo / 8){
-                        outputBits = (outputBits << (8 - (bitsTo % 8))) | (bytes[bitsTo / 8] >>> (bitsTo % 8));
+                    } else if (i == bitsTo / 8) {
+                        outputBits = (outputBits << ((bitsTo % 8))) | (bytes[bitsTo / 8] >>> (7 - (bitsTo % 8)));
+
                     } else {
                         outputBits = (outputBits << 8) | bytes[i];
                     }
