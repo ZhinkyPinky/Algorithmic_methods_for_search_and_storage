@@ -23,7 +23,7 @@ public class Trie {
         return get(getChild(node, key.charAt(d + node.label.length())), key, d + node.label.length());
     }
 
-    public void put(){
+    public void put(String key){
 
     }
 
