@@ -6,7 +6,7 @@ public class Trie {
     private final HashMap<ParentChildConnection, Node> childMap = new HashMap<>();
 
     public Trie() {
-        root = new Node(null);
+        root = new Node("");
     }
 
     public int get(String key) {
@@ -29,7 +29,7 @@ public class Trie {
     }
 
     public void put(String key, int value) {
-        Node parentNode = getChild(root, key.charAt(0));
+        Node parentNode = root;
         int keyPos = 0;
         int depth = 0;
 
