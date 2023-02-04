@@ -5,10 +5,6 @@ public class Trie {
     private Node root;
     private final HashMap<ParentChildConnection, Node> childMap = new HashMap<>();
 
-    private Node getChild(Node parent, char childLabelFirstChar) {
-        return childMap.get(new ParentChildConnection(parent, childLabelFirstChar));
-    }
-
     public int get(String key) {
         Node node = get(root, key, 0);
         if (node == null) return -1;
@@ -23,7 +19,20 @@ public class Trie {
         return get(getChild(node, key.charAt(d + node.label.length())), key, d + node.label.length());
     }
 
-    public void put(String key){
+    private Node getChild(Node parent, char childLabelFirstChar) {
+        return childMap.get(new ParentChildConnection(parent, childLabelFirstChar));
+    }
+
+    public void put(String key) {
+        Node node = root;
+        int i = 0;
+        while (true) {
+            node = getChild(node, key.charAt(i++));
+
+            if (i < key.length() && node == null) {
+
+            }
+        }
 
     }
 
