@@ -2,11 +2,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Trie {
-    private Node root;
+    private final Node root = new Node();
     private final HashMap<ParentChildConnection, Node> childMap = new HashMap<>();
 
     public Trie() {
-        root = new Node("");
     }
 
     public int get(String key) {
@@ -34,51 +33,66 @@ public class Trie {
         int depth = 0;
 
         while (true) {
-            if (parentNode != root && key.charAt(keyPos) == parentNode.label.charAt(keyPos - depth)) { //Parent label match key.
-                if (keyPos == (depth + parentNode.label.length() - 1)) { //End of parent-node label reached.
+            System.out.println(keyPos);
+            System.out.println((depth + parentNode.label.length()));
+            if (keyPos < (depth + parentNode.label.length())) {
+                System.out.println("boop");
+            }
+            if (keyPos == (depth + parentNode.label.length())) { //End of parent-node label reached.
+                if (keyPos == key.length()) { //Update value if key already exists.
+                    updateValue(parentNode, value);
+                    break;
+                }
+
+                Node childNode = getChild(parentNode, key.charAt(keyPos));
+                if (childNode == null) { //Create new node with value if key doesn't already exist.
+                    addNewNode(parentNode, key, keyPos, value);
+                    break;
+                } else { //Move to new parent-node if child with continuation of key exists.
                     depth += parentNode.label.length();
-
-                    if (keyPos == (key.length() - 1)) { //Update value if key already exists.
-                        parentNode.value = value;
-                        return;
-                    }
-
-                    Node childNode = getChild(parentNode, key.charAt(keyPos));
-                    if (childNode == null) { //Create new node with value if key doesn't already exist.
-                        childMap.put(new ParentChildConnection(parentNode, key.charAt(keyPos)), new Node(key.substring(keyPos), value));
-                        return;
-                    } else { //Move to new parent-node if child with continuation of key exists.
-                        parentNode = childNode;
-                    }
+                    parentNode = childNode;
                 }
-            } else { //Parent label doesn't match key.
-                if (parentNode != root) {
-                    childMap.put( //New node to split the parent node.
-                            new ParentChildConnection(parentNode, parentNode.label.charAt(keyPos - depth)),
-                            new Node(parentNode.label.substring(keyPos - depth)));
-
-                    //Update the parentNode.
-                    parentNode.label = parentNode.label.substring(0, keyPos - depth);
-                    parentNode.value = -1;
-                }
-
-                childMap.put( //New node to add the new key.
-                        new ParentChildConnection(parentNode, key.charAt(keyPos)),
-                        new Node(key.substring(keyPos), value));
+            } else if (keyPos == key.length()) { //Key is substring of existing substring.
+                splitNode(parentNode, keyPos, depth);
+                parentNode.value = value;
+                break;
+            } else if (key.charAt(keyPos) != parentNode.label.charAt(keyPos - depth)) { //Parent label doesn't match key.
+                splitNode(parentNode, keyPos, depth);
+                addNewNode(parentNode, key, keyPos, value);
+                break;
             }
 
             keyPos++;
         }
+    }
 
+    private void addNewNode(Node parentNode, String key, int keyPos, int value) {
+        childMap.put(new ParentChildConnection(parentNode, key.charAt(keyPos)), new Node(key.substring(keyPos), value));
+    }
+
+    private void splitNode(Node parentNode, int keyPos, int depth) {
+        childMap.put( //New node to split the parent node.
+                new ParentChildConnection(parentNode, parentNode.label.charAt(keyPos - depth)),
+                new Node(parentNode.label.substring(keyPos - depth), parentNode.value));
+
+        parentNode.label = parentNode.label.substring(0, keyPos - depth);
+        parentNode.value = -1;
+    }
+
+
+    private void updateValue(Node node, int value) {
+        node.value = value;
     }
 
     private static class Node {
-        private String label;
-        private int value;
+        private String label = "";
+        private int value = -1;
+
+        public Node() {
+        }
 
         public Node(String label) {
             this.label = label;
-            this.value = -1;
         }
 
         public Node(String label, int value) {
