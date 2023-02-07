@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.StringJoiner;
 
 public class Main {
     public static void main(String[] args) {
@@ -38,7 +36,7 @@ public class Main {
             String query = scanner.nextLine();
 
             System.out.println("**Matches***************************************");
-            System.out.println(invertedFile.getDocumensWithAll(query.split(" ")));
+            System.out.println(invertedFile.getDocumentsWithAll(query.split(" ")));
             System.out.println("************************************************");
         }
     }

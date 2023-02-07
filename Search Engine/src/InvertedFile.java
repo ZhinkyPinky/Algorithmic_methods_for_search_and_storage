@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class InvertedFile {
     Trie<LinkedHashSet<Integer>> trie = new Trie<>();
@@ -17,7 +16,7 @@ public class InvertedFile {
         return trie.get(keys);
     }
 
-    public ArrayList<Integer> getDocumensWithAll(String[] keys) {
+    public ArrayList<Integer> getDocumentsWithAll(String[] keys) {
         ArrayList<Integer> results = new ArrayList<>();
         ArrayList<LinkedHashSet<Integer>> documents = new ArrayList<>();
         LinkedHashSet<Integer> document;
@@ -32,11 +31,9 @@ public class InvertedFile {
         Integer[] bla = documents.get(0).toArray(new Integer[0]);
 
         int d = bla[0];
-        boolean done;
-        int f = 0;
+        int f;
         do {
             int matches = 0;
-            done = d == bla[bla.length - 1];
             for (int i = 0; i < documents.size(); i++) {
                 Integer[] a = documents.get(i).toArray(new Integer[0]);
 
@@ -71,47 +68,9 @@ public class InvertedFile {
                 }
             }
 
-        } while (!done);
+        } while (d != bla[bla.length - 1]);
 
         return results;
-            /*
-            Integer[] bla = documents.get(0).toArray(new Integer[0]);
-
-
-        for (int n = 0; n < bla.length; n++) {
-            int matches = 0;
-            int d = bla[n];
-
-            for (int i = 0; i < keys.length; i++) {
-                Integer[] documentArray = documents.get(i).toArray(new Integer[0]);
-
-                int f = binarySearch(documentArray, 0, documentArray.length, d);
-                if (f == d) {
-                    matches++;
-                }
-                if (f > d) {
-                    d = f;
-                    matches = 0;
-                }
-
-
-                for (int j = 0; j < documentArray.length; j++) {
-                    if (documentArray[j] == d) {
-                        matches++;
-                        break;
-                    }
-                    if (documentArray[j] > d) {
-                        d = documentArray[j];
-                        break;
-                    }
-                }
-
-
-                if (matches == keys.length) {
-                    results.add(d);
-                }
-            }
-            */
     }
 
     private int thingSearch(Integer[] array, int i, int target) {
