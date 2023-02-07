@@ -16,7 +16,6 @@ public class Trie<T> {
 
     private Node<T> get(Node<T> node, String key, int d) {
         if (node == null) return null;
-        if (node.label == null) return null;
         if (!key.startsWith(node.label, d)) return null;
         if (key.length() == d + node.label.length()) return node;
 
@@ -28,6 +27,7 @@ public class Trie<T> {
     }
 
     public void put(String key, T value) {
+        Node<T> grandparentNode = null;
         Node<T> parentNode = root;
         int keyPos = 0;
         int depth = 0;
@@ -45,14 +45,15 @@ public class Trie<T> {
                     break;
                 } else { //Move to new parent-node if child with continuation of key exists.
                     depth += parentNode.label.length();
+                    grandparentNode = parentNode;
                     parentNode = childNode;
                 }
             } else if (keyPos == key.length()) { //Key is substring of existing substring.
-                splitNode(parentNode, keyPos, depth);
-                parentNode.value = value;
+                parentNode = splitNode(grandparentNode, parentNode, keyPos, depth);
+                updateValue(parentNode, value);
                 break;
             } else if (key.charAt(keyPos) != parentNode.label.charAt(keyPos - depth)) { //Parent label doesn't match key.
-                splitNode(parentNode, keyPos, depth);
+                parentNode = splitNode(grandparentNode, parentNode, keyPos, depth);
                 addNewNode(parentNode, key, keyPos, value);
                 break;
             }
@@ -65,13 +66,21 @@ public class Trie<T> {
         childMap.put(new ParentChildConnection<>(parentNode, key.charAt(keyPos)), new Node<>(key.substring(keyPos), value));
     }
 
-    private void splitNode(Node<T> parentNode, int keyPos, int depth) {
-        childMap.put( //New node to split the parent node.
-                new ParentChildConnection<>(parentNode, parentNode.label.charAt(keyPos - depth)),
-                new Node<>(parentNode.label.substring(keyPos - depth), parentNode.value));
+    private Node<T> splitNode(Node<T> grandparentNode, Node<T> parentNode, int keyPos, int depth) {
+        ParentChildConnection<T> grandparentParentConnection = new ParentChildConnection<>(grandparentNode, parentNode.label.charAt(0));
+        childMap.remove(grandparentParentConnection);
 
-        parentNode.label = parentNode.label.substring(0, keyPos - depth);
-        parentNode.value = null;
+        Node<T> newParentNode = new Node<>(parentNode.label.substring(0, (keyPos - depth)));
+
+        ParentChildConnection<T> newGrandParentParentConnection = new ParentChildConnection<>(grandparentNode, newParentNode.label.charAt(0));
+        childMap.put(newGrandParentParentConnection, newParentNode);
+
+        parentNode.label = parentNode.label.substring(keyPos - depth);
+
+        ParentChildConnection<T> newParentChildConnection = new ParentChildConnection<>(newParentNode, parentNode.label.charAt(0));
+        childMap.put(newParentChildConnection, parentNode);
+
+        return newParentNode;
     }
 
 

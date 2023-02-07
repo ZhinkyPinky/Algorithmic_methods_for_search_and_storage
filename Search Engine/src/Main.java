@@ -1,11 +1,13 @@
 import java.io.*;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 public class Main {
     public static void main(String[] args) {
-        doStuff(new File("Search Engine/oldhouse.txt"));
-        //doStuff(new File("Search Engine/bible-washed.txt"));
+        //doStuff(new File("Search Engine/oldhouse.txt"));
+        doStuff(new File("Search Engine/bible-washed.txt"));
+        //doStuff(new File("Search Engine/test.txt"));
     }
 
     private static void doStuff(File file) {
@@ -37,11 +39,6 @@ public class Main {
 
             System.out.println("**Matches***************************************");
             System.out.println(invertedFile.getDocumensWithAll(query.split(" ")));
-            /*
-            for (String s : query.split(" ")) {
-                System.out.println(s + ": " + invertedFile.getDocuments(s));
-            }
-             */
             System.out.println("************************************************");
         }
     }

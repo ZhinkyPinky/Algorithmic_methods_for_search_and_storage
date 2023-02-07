@@ -29,22 +29,27 @@ public class InvertedFile {
             documents.add(document);
         }
 
-        if (documents.size() == 1) {
-            return new ArrayList<>(documents.get(0));
-        }
-
         Integer[] bla = documents.get(0).toArray(new Integer[0]);
-        int index = 0;
-        int d = bla[index];
-        int f;
-        while (true) {
-            if (index != -1) {
-                d = bla[index];
-            }
-            System.out.println(d);
+
+        int d = bla[0];
+        boolean done;
+        int f = 0;
+        do {
             int matches = 0;
+            done = d == bla[bla.length - 1];
             for (int i = 0; i < documents.size(); i++) {
-                f = binarySearch(documents.get(i).toArray(new Integer[0]), 0, documents.get(i).size(), d);
+                Integer[] a = documents.get(i).toArray(new Integer[0]);
+
+                int index = binarySearch(a, d);
+                if (index != -1) {
+                    f = a[index];
+                } else {
+                    int newIndex = binarySearch(bla, d) + 1;
+                    if (newIndex < bla.length) {
+                        d = bla[newIndex];
+                    }
+                    break;
+                }
 
                 if (f == d) {
                     matches++;
@@ -52,29 +57,21 @@ public class InvertedFile {
 
                 if (f > d) {
                     d = f;
-                    index = -1;
                     break;
                 }
 
                 if (matches == keys.length) {
                     results.add(d);
-                    for (int n = 0; n < bla.length; n++) {
-                        if (bla[n] == d) {
-                            index = n + 1;
-                            System.out.println(index);
-                        }
+
+                    int newIndex = binarySearch(bla, d) + 1;
+                    if (newIndex < bla.length) {
+                        d = bla[newIndex];
                     }
                     break;
                 }
             }
 
-            if (d == 4){
-                System.out.println("doop");
-            }
-            if (d == bla[bla.length - 1]) {
-                break;
-            }
-        }
+        } while (!done);
 
         return results;
             /*
@@ -135,29 +132,23 @@ public class InvertedFile {
         }
     }
 
-    private int binarySearch(Integer[] array, int left, int right, int target) {
-        if (right >= left) {
-            if (right - left <= 1) {
-                if (array[left] < target) {
-                    return array[right];
-                }
-
-                return array[left];
-            }
-
+    private int binarySearch(Integer[] array, int target) {
+        int left = 0;
+        int right = array.length - 1;
+        while (left <= right) {
             int mid = left + (right - left) / 2;
 
             if (array[mid] == target) {
                 return mid;
             }
 
-            if (array[mid] > target) {
-                return binarySearch(array, left, mid - 1, target);
+            if (array[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
-
-            return binarySearch(array, mid + 1, right, target);
         }
 
-        return -1;
+        return (left == array.length) ? -1 : left;
     }
 }
