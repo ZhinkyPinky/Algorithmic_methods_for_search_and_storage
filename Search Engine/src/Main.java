@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        //doStuff(new File("Search Engine/oldhouse.txt"));
-        doStuff(new File("Search Engine/bible-washed.txt"));
+        doStuff(new File("Search Engine/oldhouse.txt"));
+        //doStuff(new File("Search Engine/bible-washed.txt"));
     }
 
     private static void doStuff(File file) {
@@ -36,9 +36,12 @@ public class Main {
             String query = scanner.nextLine();
 
             System.out.println("**Matches***************************************");
+            System.out.println(invertedFile.getDocumensWithAll(query.split(" ")));
+            /*
             for (String s : query.split(" ")) {
                 System.out.println(s + ": " + invertedFile.getDocuments(s));
             }
+             */
             System.out.println("************************************************");
         }
     }
