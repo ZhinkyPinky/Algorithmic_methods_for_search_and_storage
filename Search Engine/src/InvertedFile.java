@@ -17,77 +17,72 @@ public class InvertedFile {
     }
 
     public ArrayList<Integer> getDocumentsWithAll(String[] keys) {
+        ArrayList<LinkedHashSet<Integer>> documentSetList = new ArrayList<>();
+        LinkedHashSet<Integer> documentSet;
+
         ArrayList<Integer> results = new ArrayList<>();
-        ArrayList<LinkedHashSet<Integer>> documents = new ArrayList<>();
-        LinkedHashSet<Integer> document;
+
         for (String key : keys) {
-            if ((document = trie.get(key)) == null) {
+            if ((documentSet = trie.get(key)) == null) {
                 return results;
             }
 
-            documents.add(document);
+            documentSetList.add(documentSet);
         }
 
-        Integer[] bla = documents.get(0).toArray(new Integer[0]);
+        if (documentSetList.size() == 1){
+            return new ArrayList<>(documentSetList.get(0));
+        }
 
-        int d = bla[0];
-        int f;
+        Integer[] firstKeyDocumentArray = documentSetList.get(0).toArray(new Integer[0]);
+        int documentToMatch = firstKeyDocumentArray[0];
+        int currentDocument = -1;
+        boolean done;
         do {
+            done = (documentToMatch != firstKeyDocumentArray[firstKeyDocumentArray.length - 1]);
             int matches = 0;
-            for (int i = 0; i < documents.size(); i++) {
-                Integer[] a = documents.get(i).toArray(new Integer[0]);
+            for (LinkedHashSet<Integer> currentDocumentSet : documentSetList) {
+                Integer[] currentKeyDocumentArray = currentDocumentSet.toArray(new Integer[0]);
 
-                int index = binarySearch(a, d);
+                int index = binarySearch(currentKeyDocumentArray, documentToMatch);
                 if (index != -1) {
-                    f = a[index];
+                    currentDocument = currentKeyDocumentArray[index];
                 } else {
-                    int newIndex = binarySearch(bla, d) + 1;
-                    if (newIndex < bla.length) {
-                        d = bla[newIndex];
-                    }
+                    documentToMatch = getNextDocument(firstKeyDocumentArray, documentToMatch);
                     break;
                 }
 
-                if (f == d) {
+                if (currentDocument == documentToMatch) {
                     matches++;
                 }
 
-                if (f > d) {
-                    d = f;
+                if (currentDocument > documentToMatch) {
+                    documentToMatch = currentDocument;
                     break;
                 }
 
                 if (matches == keys.length) {
-                    results.add(d);
-
-                    int newIndex = binarySearch(bla, d) + 1;
-                    if (newIndex < bla.length) {
-                        d = bla[newIndex];
-                    }
+                    results.add(documentToMatch);
+                    documentToMatch = getNextDocument(firstKeyDocumentArray, documentToMatch);
                     break;
                 }
             }
 
-        } while (d != bla[bla.length - 1]);
+        } while (done);
 
         return results;
     }
 
-    private int thingSearch(Integer[] array, int i, int target) {
-        int j = 1;
-        while (true) {
-            if (array[i].compareTo(target) == 0) {
-                return i;
-            }
+    private int getNextDocument(Integer[] documents, int document) {
+        int index = binarySearch(documents, document);
 
-            if (array[i].compareTo(target) < 0) {
-                i += j;
-                j *= 2;
+        if(index != -1) {
+            if (index == (documents.length - 1)){
+                index--;
             }
-
-            if (array[i].compareTo(target) > 0) {
-                return thingSearch(array, i - (j / 2), target);
-            }
+            return documents[index + 1];
+        } else {
+            return documents[documents.length - 1];
         }
     }
 

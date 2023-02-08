@@ -12,6 +12,7 @@ public class Main {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             InvertedFile invertedFile = new InvertedFile();
 
+            //there let
             String line;
             int document = 0;
             while ((line = bufferedReader.readLine()) != null) {

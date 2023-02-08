@@ -4,10 +4,10 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
         long timeBefore = System.currentTimeMillis();
-        sortTestString(new File("Radix Sort/bible-lines.txt"));
+        //sortTestString(new File("Radix Sort/bible-lines.txt"));
         //sortTestString(new File("Radix Sort/test.txt"));
         //sortTestString(new File("Radix Sort/strangestrings.txt"));
-        //sortTestInt(new File("Radix Sort/ints.txt"));
+        sortTestInt(new File("Radix Sort/ints.txt"));
         //sortTestInt(new File("Radix Sort/someones.txt"));
         //sortTestInt(new File("Radix Sort/test.txt"));
         long timeAfter = System.currentTimeMillis();
