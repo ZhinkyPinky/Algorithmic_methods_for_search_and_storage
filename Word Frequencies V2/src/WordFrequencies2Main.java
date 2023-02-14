@@ -4,7 +4,7 @@ import java.io.FileReader;
 import java.util.HashSet;
 import java.util.Scanner;
 
-public class Main {
+public class WordFrequencies2Main {
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner((new BufferedReader(new FileReader("Word Frequencies V2/test.txt"))))) {
             scanner.useDelimiter("\\W+");

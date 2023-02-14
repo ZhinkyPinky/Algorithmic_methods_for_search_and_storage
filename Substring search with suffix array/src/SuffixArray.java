@@ -1,58 +1,57 @@
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class SuffixArray {
-    private int[] a;
+    private Integer[] a;
 
     public SuffixArray(String s) {
         a = sort(s);
     }
 
-    private int[] sort(String s) {
-        int N = s.length();
-        int[] suffixes = new int[N + 1];
-        int[] groupNumbers = new int[N + 1];
-        int[] groupLengths = new int[N + 1];
+    private Integer[] sort(String s) {
+        int stringLength = s.length();
+        Integer[] suffixes = new Integer[stringLength + 1];
+        int[] groupNumbers = new int[stringLength + 1];
+        int[] groupLengths = new int[stringLength + 1];
         int h = 0;
 
-        for (int i = 0; i < N; i++) {
-            suffixes[i] = i;
-            groupNumbers[i] = s.charAt(i); //Initialize with chars for first sort, sorting on group comes later.
-        }
-        suffixes[N] = N;
+        initializeArrays(s, stringLength, suffixes, groupNumbers, groupLengths);
 
-        groupLengths[0] = N + 1; //We only have one unsorted group at this point.
-        while (groupLengths[0] > (-N - 1)) {
-            int sl = 0;
-            int k;
-            for (int i = 0; i <= N; i = k) {
-                if (groupLengths[i] < 0) {
-                    k = i - groupLengths[i];
-                    sl += groupLengths[i];
-                } else {
-                    k = i + groupLengths[i];
+        //While there's unsorted groups left.
+        while (groupLengths[0] > (-stringLength - 1)) {
+            int sortedLength = 0;
+            for (int startA = 0, endA; startA <= stringLength; startA = endA) {
+                if (groupLengths[startA] < 0) { //If sorted found.
+                    endA = startA - groupLengths[startA]; //Skip end past known sorted group.
+                    sortedLength += groupLengths[startA]; //Count sorted.
+                } else //Else if unsorted.
+                {
+                    endA = startA + groupLengths[startA]; //Set end interval of group.
 
-                    if (sl < 0) {
-                        groupLengths[i + sl] = sl;
-                        sl = 0;
+                    if (sortedLength < 0) { //If we have found sorted.
+                        groupLengths[startA + sortedLength] = sortedLength; //Set length of sorted group.
+                        sortedLength = 0;
                     }
 
-                    Arrays.sort(suffixes, i, k);
+                    Arrays.sort(suffixes, startA, endA, new SuffixComparator(h, stringLength, groupNumbers));
 
-                    for (int f = i, g; f < k; f = g + 1) {
-                        g = f;
 
-                        while (g + 1 < k && compareSuffixes(suffixes[g + 1], suffixes[f], h, N, groupNumbers) == 0) {
-                            g++;
+                    for (int startB = startA, endB; startB < endA; startB = endB + 1) {
+                        endB = startB; //Set end interval of group to look at.
+
+                        while (endB + 1 < endA && compareSuffixes(suffixes[endB + 1], suffixes[startB], h, stringLength, groupNumbers) == 0) {
+                            endB++;
                         }
 
-                        if (f == g) { //Set group length to -1 if size is 1 (sorted).
-                            groupLengths[f] = -1;
+                        if (startB == endB) { //Set group length to -1 if size is 1 (sorted).
+                            groupLengths[startB] = -1;
                         } else { //Else set group length.
-                            groupLengths[f] = g - f + 1;
+                            groupLengths[startB] = endB - startB + 1;
                         }
                     }
 
-                    for (int f = i, g; f < k; f = g + 1) {
+                    //Update group numbers.
+                    for (int f = startA, g; f < endA; f = g + 1) {
                         g = f + Math.abs(groupLengths[f]) - 1;
 
                         for (int j = f; j <= g; j++) {
@@ -61,16 +60,13 @@ public class SuffixArray {
                     }
                 }
 
-                if (sl < 0) {
-                    if ((i  + sl) == -1){
-                        System.out.println("beep");
-                    }
-                    groupLengths[i + sl] = sl;
+                if (sortedLength < 0) { //If sorted found.
+                    groupLengths[startA + sortedLength] = sortedLength; //Set length of sorted group. Start goes up while sortedLength goes down, 1:1.
                 }
 
-                if (h == 0) {
+                if (h == 0) { //If on first phase (sort on first char).
                     h = 1;
-                } else {
+                } else { //Else double h each phase.
                     h = 2 * h;
                 }
             }
@@ -79,9 +75,38 @@ public class SuffixArray {
         return suffixes;
     }
 
+    private void initializeArrays(String s, int stringLength, Integer[] suffixes, int[] groupNumbers, int[] groupLengths) {
+        for (int i = 0; i < stringLength; i++) {
+            suffixes[i] = i;
+            groupNumbers[i] = s.charAt(i); //Initialize with chars for first sort, sorting on group comes later.
+        }
+        suffixes[stringLength] = stringLength;
+        groupLengths[0] = stringLength + 1; //We only have one unsorted group at this point.
+    }
+
+
     private int compareSuffixes(int a, int b, int h, int N, int[] groupNumbers) {
-        int skey = (a + h) < N ? groupNumbers[a + h] : -1;
-        int bkey = (b + h) < N ? groupNumbers[b + h] : -1;
-        return skey - bkey;
+        int aKey = (a + h) < N ? groupNumbers[a + h] : -1;
+        int bKey = (b + h) < N ? groupNumbers[b + h] : -1;
+        return aKey - bKey;
+    }
+
+    private static class SuffixComparator implements Comparator<Integer> {
+        int h;
+        int N;
+        int[] groupNumbers;
+
+        public SuffixComparator(int h, int N, int[] groupNumbers) {
+            this.h = h;
+            this.N = N;
+            this.groupNumbers = groupNumbers;
+        }
+
+        @Override
+        public int compare(Integer a, Integer b) {
+            int aKey = (a + h) < N ? groupNumbers[a + h] : -1;
+            int bKey = (b + h) < N ? groupNumbers[b + h] : -1;
+            return aKey - bKey;
+        }
     }
 }

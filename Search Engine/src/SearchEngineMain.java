@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
 
-public class Main {
+public class SearchEngineMain {
     public static void main(String[] args) {
         //doStuff(new File("Search Engine/oldhouse.txt"));
         doStuff(new File("Search Engine/bible-washed.txt"));
@@ -12,7 +12,6 @@ public class Main {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             InvertedFile invertedFile = new InvertedFile();
 
-            //there let
             String line;
             int document = 0;
             while ((line = bufferedReader.readLine()) != null) {
