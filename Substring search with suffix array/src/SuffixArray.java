@@ -2,13 +2,17 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class SuffixArray {
-    private Integer[] a;
+    private final Integer[] suffixArray;
+    private final int[] lcpArray;
 
     public SuffixArray(String s) {
-        a = sort(s);
+        suffixArray = constructSuffixArray(s);
+        System.out.println(Arrays.toString(suffixArray));
+        lcpArray = constructLCPArray(s, suffixArray);
+        System.out.println(Arrays.toString(lcpArray));
     }
 
-    private Integer[] sort(String s) {
+    private Integer[] constructSuffixArray(String s) {
         int stringLength = s.length();
         Integer[] suffixes = new Integer[stringLength + 1];
         int[] groupNumbers = new int[stringLength + 1];
@@ -20,12 +24,13 @@ public class SuffixArray {
         //While there's unsorted groups left.
         while (groupLengths[0] > (-stringLength - 1)) {
             int sortedLength = 0;
-            for (int startA = 0, endA; startA <= stringLength; startA = endA) {
+
+            int startA, endA;
+            for (startA = 0; startA <= stringLength; startA = endA) {
                 if (groupLengths[startA] < 0) { //If sorted found.
-                    endA = startA - groupLengths[startA]; //Skip end past known sorted group.
-                    sortedLength += groupLengths[startA]; //Count sorted.
-                } else //Else if unsorted.
-                {
+                    endA = startA - groupLengths[startA]; //Skip past sorted group.
+                    sortedLength += groupLengths[startA]; //Count sorted group length.
+                } else { //Else if unsorted found.
                     endA = startA + groupLengths[startA]; //Set end interval of group.
 
                     if (sortedLength < 0) { //If we have found sorted.
@@ -34,7 +39,6 @@ public class SuffixArray {
                     }
 
                     Arrays.sort(suffixes, startA, endA, new SuffixComparator(h, stringLength, groupNumbers));
-
 
                     for (int startB = startA, endB; startB < endA; startB = endB + 1) {
                         endB = startB; //Set end interval of group to look at.
@@ -51,24 +55,27 @@ public class SuffixArray {
                     }
 
                     //Update group numbers.
-                    for (int f = startA, g; f < endA; f = g + 1) {
-                        g = f + Math.abs(groupLengths[f]) - 1;
+                    for (int startC = startA, endC; startC < endA; startC = endC + 1) {
+                        endC = startC + Math.abs(groupLengths[startC]) - 1;
 
-                        for (int j = f; j <= g; j++) {
-                            groupNumbers[suffixes[j]] = g;
+                        for (int j = startC; j <= endC; j++) {
+                            groupNumbers[suffixes[j]] = endC;
                         }
                     }
                 }
+            }
 
-                if (sortedLength < 0) { //If sorted found.
-                    groupLengths[startA + sortedLength] = sortedLength; //Set length of sorted group. Start goes up while sortedLength goes down, 1:1.
+            if (sortedLength < 0) { //If sorted found.
+                if (startA + sortedLength == -1) {
+                    System.out.println("boop");
                 }
+                groupLengths[startA + sortedLength] = sortedLength; //Set length of sorted group. Start goes up while sortedLength goes down, 1:1.
+            }
 
-                if (h == 0) { //If on first phase (sort on first char).
-                    h = 1;
-                } else { //Else double h each phase.
-                    h = 2 * h;
-                }
+            if (h == 0) { //If on first phase (sort on first char).
+                h = 1;
+            } else { //Else double h each phase.
+                h = 2 * h;
             }
         }
 
@@ -107,6 +114,62 @@ public class SuffixArray {
             int aKey = (a + h) < N ? groupNumbers[a + h] : -1;
             int bKey = (b + h) < N ? groupNumbers[b + h] : -1;
             return aKey - bKey;
+        }
+    }
+
+    private int[] constructLCPArray(String s, Integer[] suffixArray) {
+        int[] inverse = new int[suffixArray.length];
+        int[] lcp = new int[suffixArray.length];
+
+        for (int i = 0; i < suffixArray.length; i++) {
+            inverse[suffixArray[i]] = i;
+        }
+        int h;
+        for (int i = 0; i < suffixArray.length; i++) {
+            int r = inverse[i];
+            h = 0;
+            if (r > 0) {
+                int j = suffixArray[r - 1];
+
+                if (j != s.length()) {
+                    while (s.charAt(i + h) == s.charAt(j + h)) {
+                        h++;
+
+                        if ((i + h) == s.length() || (j + h) == s.length()) {
+                            break;
+                        }
+                    }
+                }
+
+                lcp[r - 1] = h;
+            }
+        }
+
+        return lcp;
+    }
+
+    public void binarySearch(String target, String s) {
+        int left = 0;
+        int right = suffixArray.length - 1;
+        k, lcp = 0;
+
+        int l = compareToSuffixLCP(target, s, left, 0);
+        int r = compareToSuffixLCP(target, s, right, 0);
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int mlr = Math.min(l, r);
+            int diff = compareToSuffixLCP(target, s, suffixArray[mid], mlr);
+            int lcp = Math.max(lcp, di)
+        }
+
+    }
+
+    private int compareToSuffixLCP(String target, String s, int left, int i) {
+        int compare = 0;
+
+        while (true) {
+            if ()
         }
     }
 }
