@@ -1,15 +1,20 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
 
 public class SuffixArray {
-    private final Integer[] suffixArray;
-    private final int[] lcpArray;
+    private final String S;
+    private final Integer[] SUFFIX_ARRAY;
+    private final int[] LCP;
 
     public SuffixArray(String s) {
-        suffixArray = constructSuffixArray(s);
-        System.out.println(Arrays.toString(suffixArray));
-        lcpArray = constructLCPArray(s, suffixArray);
-        System.out.println(Arrays.toString(lcpArray));
+        this.S = s;
+
+        SUFFIX_ARRAY = constructSuffixArray(s);
+        System.out.println(Arrays.toString(SUFFIX_ARRAY));
+
+        LCP = constructLCP(s, SUFFIX_ARRAY);
+        System.out.println(Arrays.toString(LCP));
     }
 
     private Integer[] constructSuffixArray(String s) {
@@ -117,17 +122,37 @@ public class SuffixArray {
         }
     }
 
-    private int[] constructLCPArray(String s, Integer[] suffixArray) {
-        int[] inverse = new int[suffixArray.length];
-        int[] lcp = new int[suffixArray.length];
+    private int[] constructLCP(String s, Integer[] suffixArray) {
+        int n = suffixArray.length;
+        int[] inverse = new int[n];
+        int[] lcp = new int[n];
 
-        for (int i = 0; i < suffixArray.length; i++) {
+        for (int i = 0; i < n; i++) {
             inverse[suffixArray[i]] = i;
         }
-        int h;
-        for (int i = 0; i < suffixArray.length; i++) {
+
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            /*
+            if (inverse[i] == n - 1){
+                k = 0;
+                continue;
+            }
+
+            int j = suffixArray[inverse[i] + 1];
+            while ((((i + k) < n - 1) && ((j + k) < n - 1)) && s.charAt(i + k) == s.charAt(j + k)){
+                k++;
+            }
+
+            lcp[inverse[i]] = k;
+
+            if (k > 0){
+                k--;
+            }
+             */
+
             int r = inverse[i];
-            h = 0;
+            int h = 0;
             if (r > 0) {
                 int j = suffixArray[r - 1];
 
@@ -141,35 +166,123 @@ public class SuffixArray {
                     }
                 }
 
-                lcp[r - 1] = h;
+                lcp[r] = h;
             }
         }
 
         return lcp;
     }
 
-    public void binarySearch(String target, String s) {
-        int left = 0;
-        int right = suffixArray.length - 1;
-        k, lcp = 0;
-
-        int l = compareToSuffixLCP(target, s, left, 0);
-        int r = compareToSuffixLCP(target, s, right, 0);
-
-        while (left <= right) {
-            int mid = left + (right - left) / 2;
-            int mlr = Math.min(l, r);
-            int diff = compareToSuffixLCP(target, s, suffixArray[mid], mlr);
-            int lcp = Math.max(lcp, di)
+    /*
+    private void constructLCPLR(int index, int left, int right) {
+        System.out.println("Index: " + index + " Left: " + left + " Right:" + right);
+        if (left == right) {
+            LCP_LR[index] = LCP[left];
+            return;
         }
 
+        int mid = (left + right) / 2;
+
+        constructLCPLR(2 * index, left, mid);
+        constructLCPLR(2 * index + 1, mid + 1, right);
+
+        LCP_LR[index] = Math.min(LCP_LR[2 * index], LCP_LR[2 * index + 1]);
     }
 
-    private int compareToSuffixLCP(String target, String s, int left, int i) {
+    private void binarySearch(String target) {
+        int left = 0;
+        int right = SUFFIX_ARRAY.length - 1;
+        int mid = (left + right) / 2;
+
+        int k = 0;
+        String suffix = S.substring(SUFFIX_ARRAY[mid]);
+        for (int i = 0; i < target.length(); i++) {
+            if (target.charAt(i) == suffix.charAt(i)) {
+                k++;
+            } else if (target.charAt(i) < suffix.charAt(i)){
+
+            } else {
+
+            }
+        }
+    }
+     */
+
+    public LinkedList<Integer> finalAllOccurrences(String target) {
+        LinkedList<Integer> suffixes = new LinkedList<>();
+
+        int i = binarySearch(target);
+        suffixes.addFirst(i);
+
+        int j = 1;
+        while (i + j < LCP.length && LCP[i + j] != 0) {
+            suffixes.addLast(i + j++);
+        }
+
+        /*
+        if(LCP[i] != 0) {
+            j = 1;
+            while (LCP[i - j] != 0) {
+                suffixes.addFirst(i - j++);
+            }
+
+            suffixes.addFirst(i - j);
+        }
+         */
+
+        return suffixes;
+    }
+
+    public int binarySearch(String target) {
+        int left = 0;
+        int right = SUFFIX_ARRAY.length - 1;
+        int lcp = 0;
+
+        int l = compareToSuffixLCP(target, left, 0)[1];
+        int r = compareToSuffixLCP(target, right, 0)[1];
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            int mlr = Math.min(l, r);
+            int[] diff = compareToSuffixLCP(target, SUFFIX_ARRAY[mid], mlr);
+            lcp = Math.max(lcp, diff[1]);
+
+            if (diff[0] < 0) {
+                right = mid - 1;
+                r = diff[1];
+            } else if (diff[0] > 0) {
+                left = mid + 1;
+                l = diff[1];
+            } else {
+                left = mid;
+                break;
+            }
+        }
+
+        return left;
+    }
+
+    private int[] compareToSuffixLCP(String target, int i, int j) {
         int compare = 0;
 
         while (true) {
-            if ()
+            if (j >= target.length()) {
+                break;
+            }
+
+            if (i + j >= S.length()) {
+                compare = 1;
+                break;
+            }
+
+            compare = target.charAt(j) - S.charAt(i + j);
+            if (compare != 0) {
+                break;
+            }
+
+            j++;
         }
+
+        return new int[]{compare, j};
     }
 }
