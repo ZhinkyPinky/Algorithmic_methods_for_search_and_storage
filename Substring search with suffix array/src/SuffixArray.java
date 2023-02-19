@@ -11,10 +11,10 @@ public class SuffixArray {
         this.S = s;
 
         SUFFIX_ARRAY = constructSuffixArray(s);
-        System.out.println(Arrays.toString(SUFFIX_ARRAY));
+        //System.out.println(Arrays.toString(SUFFIX_ARRAY));
 
         LCP = constructLCP(s, SUFFIX_ARRAY);
-        System.out.println(Arrays.toString(LCP));
+        //System.out.println(Arrays.toString(LCP));
     }
 
     private Integer[] constructSuffixArray(String s) {
@@ -208,27 +208,48 @@ public class SuffixArray {
     }
      */
 
-    public LinkedList<Integer> finalAllOccurrences(String target) {
-        LinkedList<Integer> suffixes = new LinkedList<>();
+    public LinkedList<String[]> findAllOccurrences(String target) {
+        LinkedList<String[]> suffixes = new LinkedList<>();
 
         int i = binarySearch(target);
-        suffixes.addFirst(i);
-
-        int j = 1;
-        while (i + j < LCP.length && LCP[i + j] != 0) {
-            suffixes.addLast(i + j++);
-        }
-
-        /*
-        if(LCP[i] != 0) {
-            j = 1;
-            while (LCP[i - j] != 0) {
-                suffixes.addFirst(i - j++);
+        int j = 0;
+        while (true) {
+            //System.out.println("LCP: " + LCP[i - j] + " Target L: " + target.length());
+            if (i - j < 0) {
+                break;
             }
 
-            suffixes.addFirst(i - j);
+            if (LCP[i - j] == 0) {
+                suffixes.addFirst(new String[]{String.valueOf(i - j), S.substring(i - j, i - j + 10)});
+                break;
+            }
+
+            if (target.length() <= LCP[i - j]) {
+                suffixes.addFirst(new String[]{String.valueOf(i - j), S.substring(i - j, i - j + 10)});
+                //suffixes.addFirst(i - j++);
+                j++;
+            } else {
+                suffixes.addFirst(new String[]{String.valueOf(i - j), S.substring(i - j, i - j + 10)});
+                //suffixes.addFirst(i - j);
+                break;
+            }
         }
-         */
+
+        j = 1;
+        while (true) {
+            if (i + j >= LCP.length) {
+                break;
+            }
+
+            if (LCP[i + j] == 0) {
+                break;
+            }
+
+            suffixes.addFirst(new String[]{String.valueOf(i + j), S.substring(i + j, i + j + 10)});
+            //suffixes.addLast(i + j++);
+            j++;
+        }
+
 
         return suffixes;
     }
