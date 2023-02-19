@@ -23,8 +23,7 @@ public class Main {
             String target = scanner.nextLine();
 
             System.out.println("**Matches***************************************");
-            System.out.println(suffixArray.findAllOccurrences(target).toString());
-            System.out.println(suffixArray.binarySearch(target));
+            suffixArray.findAllOccurrences(target).forEach((key, value) -> System.out.println(key + ": " + value));
             System.out.println("************************************************");
             System.out.println();
         }

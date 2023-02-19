@@ -1,6 +1,6 @@
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.HashMap;
 
 public class SuffixArray {
     private final String S;
@@ -208,50 +208,55 @@ public class SuffixArray {
     }
      */
 
-    public LinkedList<String[]> findAllOccurrences(String target) {
-        LinkedList<String[]> suffixes = new LinkedList<>();
+    public HashMap<Integer, String> findAllOccurrences(String target) {
+        HashMap<Integer, String> occurrences = new HashMap<>();
 
         int i = binarySearch(target);
         int j = 0;
         while (true) {
-            //System.out.println("LCP: " + LCP[i - j] + " Target L: " + target.length());
-            if (i - j < 0) {
+            int index = i - j;
+            if (index < 0 || index >= LCP.length - 1) {
                 break;
             }
 
-            if (LCP[i - j] == 0) {
-                suffixes.addFirst(new String[]{String.valueOf(i - j), S.substring(i - j, i - j + 10)});
+            if (LCP[index] == 0) {
+                addOccurrence(occurrences, target, index);
                 break;
             }
 
             if (target.length() <= LCP[i - j]) {
-                suffixes.addFirst(new String[]{String.valueOf(i - j), S.substring(i - j, i - j + 10)});
-                //suffixes.addFirst(i - j++);
+                addOccurrence(occurrences, target, index);
                 j++;
             } else {
-                suffixes.addFirst(new String[]{String.valueOf(i - j), S.substring(i - j, i - j + 10)});
-                //suffixes.addFirst(i - j);
+                addOccurrence(occurrences, target, index);
                 break;
             }
         }
 
         j = 1;
         while (true) {
-            if (i + j >= LCP.length) {
+            int index = i + j;
+            if (index >= LCP.length - 1) {
                 break;
             }
 
-            if (LCP[i + j] == 0) {
+            if (LCP[index] < target.length()) {
                 break;
             }
 
-            suffixes.addFirst(new String[]{String.valueOf(i + j), S.substring(i + j, i + j + 10)});
-            //suffixes.addLast(i + j++);
+            addOccurrence(occurrences, target, index);
             j++;
         }
 
+        return occurrences;
+    }
 
-        return suffixes;
+    private void addOccurrence(HashMap<Integer, String> occurrences, String target, int index) {
+        if ((target.length() + SUFFIX_ARRAY[index]) + 10 >= S.length() - 1) {
+            occurrences.put(SUFFIX_ARRAY[index], S.substring(SUFFIX_ARRAY[index]));
+        } else {
+            occurrences.put(SUFFIX_ARRAY[index], target + S.substring(SUFFIX_ARRAY[index] + target.length(), target.length() + SUFFIX_ARRAY[index] + 10));
+        }
     }
 
     public int binarySearch(String target) {
