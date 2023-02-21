@@ -131,26 +131,7 @@ public class SuffixArray {
             inverse[suffixArray[i]] = i;
         }
 
-        int k = 0;
         for (int i = 0; i < n; i++) {
-            /*
-            if (inverse[i] == n - 1){
-                k = 0;
-                continue;
-            }
-
-            int j = suffixArray[inverse[i] + 1];
-            while ((((i + k) < n - 1) && ((j + k) < n - 1)) && s.charAt(i + k) == s.charAt(j + k)){
-                k++;
-            }
-
-            lcp[inverse[i]] = k;
-
-            if (k > 0){
-                k--;
-            }
-             */
-
             int r = inverse[i];
             int h = 0;
             if (r > 0) {
