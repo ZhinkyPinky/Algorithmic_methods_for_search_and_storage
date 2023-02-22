@@ -14,7 +14,7 @@ public class BWT {
             for (int i = 0; i < bytes.length; i++) {
                 bytes[i] = (byte) bufferedInputStream.read();
             }
-            bytes[bytes.length - 1] = '$';
+            bytes[bytes.length - 1] = Character.MIN_VALUE;
 
             Integer[] suffixArray = constructSuffixArray(bytes);
 
