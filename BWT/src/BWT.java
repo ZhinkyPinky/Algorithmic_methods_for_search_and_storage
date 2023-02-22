@@ -17,6 +17,7 @@ public class BWT {
             bytes[bytes.length - 1] = '$';
 
             Integer[] suffixArray = constructSuffixArray(bytes);
+
             /*
             String[] sA = new String[bytes.length];
             Arrays.fill(sA, "");
@@ -95,9 +96,10 @@ public class BWT {
                     j = 1;
                 } else {
                     bwtOutput[i - 1 - j] = bytes[((suffixArray[i] - 1) + bytes.length) % bytes.length];
-                    System.out.println(suffixArray[i] + " : " + (char) bytes[((suffixArray[i] - 1) + bytes.length) % bytes.length] + " : " + bytes[((suffixArray[i] - 1) + bytes.length) % bytes.length]);
+                    //System.out.println(suffixArray[i] + " : " + (char) bytes[((suffixArray[i] - 1) + bytes.length) % bytes.length] + " : " + bytes[((suffixArray[i] - 1) + bytes.length) % bytes.length]);
                 }
             }
+
             /*
             int originalStringIndex = -1;
             int j = 0;
@@ -114,36 +116,36 @@ public class BWT {
             }
             */
 
-            Huffman huffman = new Huffman(256);
-            huffman.encode(originalStringIndex, moveToFront(bwtOutput));
+            new Huffman(256).encode(originalStringIndex, moveToFront(bwtOutput));
         } catch (
                 IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private byte[] moveToFront(byte[] bwtOutput) {
+    private byte[] moveToFront(byte[] bytes) {
         int[] chars = new int[256];
         for (int i = 0; i < 256; i++) {
             chars[i] = i;
         }
 
-        for (int i = 0; i < bwtOutput.length; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             int index = -1;
             for (int j = 0; j < chars.length; j++) {
-                if (chars[j] == bwtOutput[i]) {
+                if (chars[j] == bytes[i]) {
                     index = j;
                     for (int n = j; n > 0; n--) {
                         chars[n] = chars[n - 1];
                     }
 
-                    chars[0] = bwtOutput[i];
+                    chars[0] = bytes[i];
                 }
             }
 
-            bwtOutput[i] = (byte) index;
+            bytes[i] = (byte) index;
         }
-        return bwtOutput;
+
+        return bytes;
     }
 
     private Integer[] constructSuffixArray(byte[] bytes) {

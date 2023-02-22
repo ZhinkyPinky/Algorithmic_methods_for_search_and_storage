@@ -79,7 +79,8 @@ public class Huffman {
             output.append(codes[b]);
         }
 
-        output.append("0".repeat(Math.max(0, (output.length() % 8))));
+        output.append("0".repeat(Math.max(0, (8 - output.length() % 8) % 8)));
+        //output.append("0".repeat(Math.max(0, (output.length() % 8))));
 
         return output.toString();
     }

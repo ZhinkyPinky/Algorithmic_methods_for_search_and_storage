@@ -9,12 +9,6 @@ public class Huffman {
     }
 
     public void encode(int originalStringIndex, byte[] bytes) {
-        System.out.println(bytes.length);
-        for (byte b : bytes) {
-            System.out.print(b + " ");
-        }
-        System.out.println();
-
         try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream("BWT/output.bwt"))) {
             Node root = constructTrie(bytes);
             String[] codes = constructCodes(root, new String[R], "");
@@ -57,7 +51,6 @@ public class Huffman {
 
     private String[] constructCodes(Node node, String[] codes, String code) {
         if (node.isLeaf) {
-            System.out.println(node.key + " : " + code);
             codes[node.key] = code;
             return codes;
         }
@@ -83,11 +76,9 @@ public class Huffman {
         }
 
         for (byte b : bytes) {
-            System.out.println(codes[b]);
             output.append(codes[b]);
         }
 
-        System.out.println((8 - output.length() % 8) % 8);
         output.append("0".repeat(Math.max(0, (8 - output.length() % 8) % 8)));
         return output.toString();
     }
