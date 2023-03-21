@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        File file = new File("Substring search with suffix array/test.txt");
-        //File file = new File("Substring search with suffix array/bible-oneline.txt");
+        //File file = new File("Substring search with suffix array/test.txt");
+        File file = new File("Substring search with suffix array/bible-oneline.txt");
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             SuffixArray suffixArray = new SuffixArray(bufferedReader.readLine());
             doStuff(suffixArray);

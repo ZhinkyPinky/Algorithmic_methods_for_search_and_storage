@@ -90,7 +90,7 @@ public class BWT {
             int originalStringIndex = -1;
             int j = 0;
             byte[] bwtOutput = new byte[bytes.length - 1];
-            for (int i = 1; i < suffixArray.length; i++) {
+            for (int i = 1; i < suffixArray.length; i++) { //Find the bwt output string based on the suffix array.
                 if (suffixArray[i] == 0) {
                     originalStringIndex = i - 1;
                     j = 1;
@@ -125,20 +125,20 @@ public class BWT {
 
     private byte[] moveToFront(byte[] bytes) {
         int[] chars = new int[256];
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) { //Construct alphabet representation.
             chars[i] = i;
         }
 
-        for (int i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length; i++) { //For each character in the bwt output.
             int index = -1;
-            for (int j = 0; j < chars.length; j++) {
-                if (chars[j] == bytes[i]) {
+            for (int j = 0; j < chars.length; j++) { //For each character in the alphabet representation.
+                if (chars[j] == bytes[i]) { //If character in bwt output found in the alphabet representation.
                     index = j;
-                    for (int n = j; n > 0; n--) {
+                    for (int n = j; n > 0; n--) { //Move everything to the left of the found character one step to the right.
                         chars[n] = chars[n - 1];
                     }
 
-                    chars[0] = bytes[i];
+                    chars[0] = bytes[i]; //Set first character to the one that was found.
                 }
             }
 
